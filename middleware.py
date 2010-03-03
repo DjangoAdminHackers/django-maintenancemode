@@ -5,7 +5,7 @@ from django.conf.urls import defaults
 defaults.handler503 = 'maintenancemode.views.defaults.temporary_unavailable'
 defaults.__all__.append('handler503')
 
-from maintenancemode.conf.settings import MAINTENANCE_MODE
+from maintenancemode.conf.settings import MAINTENANCE_MODE, MAINTENANCE_MODE_ADMIN
 
 class MaintenanceModeMiddleware(object):
     def process_request(self, request):
@@ -15,12 +15,16 @@ class MaintenanceModeMiddleware(object):
 
         # Allow access if remote ip is in INTERNAL_IPS
         if request.META.get('REMOTE_ADDR') in settings.INTERNAL_IPS:
-            pass
+            pass # TODO I currently don't trust internal IPs with Webfaction's proxying although it could just be a middleware order problem
             #return None
         
         # Allow acess if the user doing the request is logged in and a
         # staff member.
         if hasattr(request, 'user') and request.user.is_staff:
+            return None
+        
+        # Allow admin
+        if not MAINTENANCE_MODE_ADMIN and request.META['PATH_INFO'].startswith(urlresolvers.reverse('admin:index')):
             return None
         
         # Otherwise show the user the 503 page
