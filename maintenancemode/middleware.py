@@ -1,9 +1,14 @@
+import django
 from django.conf import settings
 from django.core import urlresolvers
 
-from django.conf.urls import defaults
-defaults.handler503 = 'maintenancemode.views.defaults.temporary_unavailable'
-defaults.__all__.append('handler503')
+if django.VERSION[:2] < (1, 3):
+    from django.conf.urls import defaults as urls
+else:
+    from django.conf import urls
+
+urls.handler503 = 'maintenancemode.views.defaults.temporary_unavailable'
+urls.__all__.append('handler503')
 
 from maintenancemode.conf.settings import MAINTENANCE_MODE, MAINTENANCE_MODE_ADMIN
 
