@@ -2,7 +2,7 @@ import django
 from django.conf import settings
 from django.core import urlresolvers
 
-if django.VERSION[:2] < (1, 3):
+if django.VERSION[:2] <= (1, 3):
     from django.conf.urls import defaults as urls
 else:
     from django.conf import urls
